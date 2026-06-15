@@ -4,10 +4,10 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.realworld.blog.common.BusinessException;
-import com.realworld.blog.dto.request.ArticlesFeedRequest;
-import com.realworld.blog.dto.request.ArticlesGetRequest;
-import com.realworld.blog.dto.request.ArticlesPostRequest;
-import com.realworld.blog.dto.request.ArticlesSlugPutRequest;
+import com.realworld.blog.dto.request.ListFeedArticlesRequest;
+import com.realworld.blog.dto.request.ListArticlesRequest;
+import com.realworld.blog.dto.request.CreateArticleRequest;
+import com.realworld.blog.dto.request.UpdateArticleRequest;
 import com.realworld.blog.dto.response.*;
 import com.realworld.blog.entity.*;
 import com.realworld.blog.interceptor.JwtInterceptor;
@@ -54,10 +54,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
     @Transactional
     @Override
-    public ArticlesPostResponse articlesPost(ArticlesPostRequest articlesPostRequest) {
+    public CreateArticleResponse createArticle(CreateArticleRequest articlesPostRequest) {
         //req:select user insert article tag  select tag insert article_tag +slug
         //res:select user article favorite(默认不用写) +tag +following
-        ArticlesPostRequest.ArticleBean articleBean = articlesPostRequest.getArticle();
+        CreateArticleRequest.ArticleBean articleBean = articlesPostRequest.getArticle();
         String currentUsername = JwtInterceptor.getCurrentUser();
         if (currentUsername == null) {
             throw new BusinessException("user not logged in");
@@ -104,9 +104,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
         Article articleRes = this.getById(article.getId());
 
-        ArticlesPostResponse articlesPostResponse = new ArticlesPostResponse();
-        articlesPostResponse.setArticle(new ArticlesPostResponse.ArticleBean());
-        articlesPostResponse.getArticle().setAuthor(new ArticlesPostResponse.ArticleBean.AuthorBean());
+        CreateArticleResponse articlesPostResponse = new CreateArticleResponse();
+        articlesPostResponse.setArticle(new CreateArticleResponse.ArticleBean());
+        articlesPostResponse.getArticle().setAuthor(new CreateArticleResponse.ArticleBean.AuthorBean());
         BeanUtils.copyProperties(articleRes, articlesPostResponse.getArticle());
         BeanUtils.copyProperties(currentUser, articlesPostResponse.getArticle().getAuthor());
         articlesPostResponse.getArticle().setTagList(articlesPostRequest.getArticle().getTagList());
@@ -115,15 +115,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     @Override
-    public ArticlesSlugGetResponse articlesSlugGet(String slug) {
+    public GetArticleResponse getArticle(String slug) {
         //select article(slug) select user(author_id,username) select userfollows(2id)
         //select articletag(articleid) select tag(tagid),select userfav(cuserid,articleid)
         //article,tag,cu,fav,user,follow
         String currentUsername = JwtInterceptor.getCurrentUser();
 
-        ArticlesSlugGetResponse articlesSlugGetResponse = new ArticlesSlugGetResponse();
-        articlesSlugGetResponse.setArticle(new ArticlesSlugGetResponse.ArticleBean());
-        articlesSlugGetResponse.getArticle().setAuthor(new ArticlesSlugGetResponse.ArticleBean.AuthorBean());
+        GetArticleResponse getArticleResponse = new GetArticleResponse();
+        getArticleResponse.setArticle(new GetArticleResponse.ArticleBean());
+        getArticleResponse.getArticle().setAuthor(new GetArticleResponse.ArticleBean.AuthorBean());
 
         Article article = this.lambdaQuery().eq(Article::getSlug, slug).one();
         if (article == null) {
@@ -145,44 +145,44 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                         }
                         return tag.getName();
                     }).toList();
-            articlesSlugGetResponse.getArticle().setTagList(tagNameList);
+            getArticleResponse.getArticle().setTagList(tagNameList);
         }
         List<UserFavorites> userFavoritesList = userFavoritesService.lambdaQuery().eq(UserFavorites::getArticleId, article.getId()).list();
         if(userFavoritesList!=null){
-            articlesSlugGetResponse.getArticle().setFavoritesCount(userFavoritesList.size());
+            getArticleResponse.getArticle().setFavoritesCount(userFavoritesList.size());
         }
         if (currentUsername != null) {
             User currentUser = userService.lambdaQuery().eq(User::getUsername, currentUsername).one();
             if (currentUser != null) {
                 if (userFollowsService.lambdaQuery().eq(UserFollows::getFollowerId, currentUser.getId())
                         .eq(UserFollows::getFolloweeId, targetUser.getId()).exists()) {
-                    articlesSlugGetResponse.getArticle().getAuthor().setFollowing(true);
+                    getArticleResponse.getArticle().getAuthor().setFollowing(true);
                 }
                 if (userFavoritesService.lambdaQuery().eq(UserFavorites::getArticleId, article.getId())
                         .eq(UserFavorites::getUserId, currentUser.getId()).exists()) {
-                    articlesSlugGetResponse.getArticle().setFavorited(true);
+                    getArticleResponse.getArticle().setFavorited(true);
                 }
             }
         }
 
-        BeanUtils.copyProperties(article, articlesSlugGetResponse.getArticle());
-        BeanUtils.copyProperties(targetUser, articlesSlugGetResponse.getArticle().getAuthor());
-        articlesSlugGetResponse.getArticle().setCreatedAt(article.getCreatedAt());
-        articlesSlugGetResponse.getArticle().setUpdatedAt(article.getUpdatedAt());
-        return articlesSlugGetResponse;
+        BeanUtils.copyProperties(article, getArticleResponse.getArticle());
+        BeanUtils.copyProperties(targetUser, getArticleResponse.getArticle().getAuthor());
+        getArticleResponse.getArticle().setCreatedAt(article.getCreatedAt());
+        getArticleResponse.getArticle().setUpdatedAt(article.getUpdatedAt());
+        return getArticleResponse;
     }
 
     @Override
-    public ArticlesGetResponse articlesGet(ArticlesGetRequest articlesGetRequest) {
+    public ListArticlesResponse listArticles(ListArticlesRequest listArticlesRequest) {
         System.out.println("limit进来");
-        if(articlesGetRequest==null){
+        if(listArticlesRequest ==null){
             throw new BusinessException("request is empty");
         }
-        String favorited = articlesGetRequest.getFavorited();
-        String tag = articlesGetRequest.getTag();
-        String author = articlesGetRequest.getAuthor();
-        int limit = articlesGetRequest.getLimit();
-        int offset = articlesGetRequest.getOffset();
+        String favorited = listArticlesRequest.getFavorited();
+        String tag = listArticlesRequest.getTag();
+        String author = listArticlesRequest.getAuthor();
+        int limit = listArticlesRequest.getLimit();
+        int offset = listArticlesRequest.getOffset();
         if(limit<=0){
             limit=20;
         }
@@ -192,10 +192,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
         String currentUsername = JwtInterceptor.getCurrentUser();
 
-        ArticlesGetResponse articlesGetResponse = new ArticlesGetResponse();
+        ListArticlesResponse listArticlesResponse = new ListArticlesResponse();
 
 
-        List<ArticlesGetResponse.ArticlesDTO> list=null;
+        List<ListArticlesResponse.ArticlesDTO> list=null;
         Integer articlesDTOCount=0;
         System.out.println("入口");
         if(favorited==null&&tag==null&&author==null){
@@ -207,7 +207,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
             articlesDTOCount=articleMapper.getArticlesDTOCount(favorited,tag,author);
         }
         if(list!=null&&!list.isEmpty()) {
-            List<ArticlesGetResponse.ArticlesDTO> articlesDTOList = list.stream().map(articlesDTO -> {
+            List<ListArticlesResponse.ArticlesDTO> articlesDTOList = list.stream().map(articlesDTO -> {
                 Long articlesDTOId = articlesDTO.getId();
                 articlesDTO.setTagList(new ArrayList<>());
                 List<String> tagnameList= tagMapper.selectTagnameByarticleId(articlesDTOId);
@@ -217,7 +217,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 }
                 Integer favoriteCount = Math.toIntExact(userFavoritesService.lambdaQuery().eq(UserFavorites::getArticleId, articlesDTOId).count());
                 articlesDTO.setFavoritesCount(favoriteCount);
-                articlesDTO.setAuthor(new ArticlesGetResponse.ArticlesDTO.AuthorDTO());
+                articlesDTO.setAuthor(new ListArticlesResponse.ArticlesDTO.AuthorDTO());
                 User authorEntity = userService.getById(articlesDTO.getAuthorId());
                 BeanUtils.copyProperties(authorEntity,articlesDTO.getAuthor());
                 if(currentUsername!=null){
@@ -236,26 +236,26 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 return articlesDTO;
             }).toList();
             if(articlesDTOList!=null){
-                articlesGetResponse.setArticles(articlesDTOList);
+                listArticlesResponse.setArticles(articlesDTOList);
             }
         }
-        articlesGetResponse.setArticlesCount(articlesDTOCount);
-        return articlesGetResponse;
+        listArticlesResponse.setArticlesCount(articlesDTOCount);
+        return listArticlesResponse;
     }
 
     @Transactional
     @Override
-    public ArticlesSlugPutResponse articlesSlugPut(ArticlesSlugPutRequest articlesSlugPutRequest, String slug) {
+    public UpdateArticleResponse updateArticle(UpdateArticleRequest updateArticleRequest, String slug) {
         //update article(title description body where slug)
         //select a.slug,a.title,a.description,a.body,a.createdAt,a.updatedAt,u.username,u.bio,u.image
         // from article a join user u on u.id=a.author_id where a.slug=#{slug}
         //res:res1+tagList+fav+favcount+following
         String currentUsername = JwtInterceptor.getCurrentUser();
-        String body = articlesSlugPutRequest.getArticle().getBody();
-        String title = articlesSlugPutRequest.getArticle().getTitle();
-        String description = articlesSlugPutRequest.getArticle().getDescription();
+        String body = updateArticleRequest.getArticle().getBody();
+        String title = updateArticleRequest.getArticle().getTitle();
+        String description = updateArticleRequest.getArticle().getDescription();
 
-        ArticlesSlugPutResponse articlesSlugPutResponse = new ArticlesSlugPutResponse();
+        UpdateArticleResponse updateArticleResponse = new UpdateArticleResponse();
 
         if(currentUsername==null){
             throw new BusinessException("user not logged in");
@@ -298,7 +298,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         if(newSlug!=null){
             slug=newSlug;
         }
-        ArticlesSlugPutResponse.ArticleBean articleBean=articleMapper.getArticleBean(slug);
+        UpdateArticleResponse.ArticleBean articleBean=articleMapper.getArticleBean(slug);
         articleBean.setTagList(new ArrayList<>());
         Long articleId = articleBean.getId();
         List<String> tagnameList= tagMapper.selectTagnameByarticleId(articleId);
@@ -308,7 +308,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
         Integer favoriteCount = Math.toIntExact(userFavoritesService.lambdaQuery().eq(UserFavorites::getArticleId, articleId).count());
         articleBean.setFavoritesCount(favoriteCount);
-        articleBean.setAuthor(new ArticlesSlugPutResponse.ArticleBean.AuthorBean());
+        articleBean.setAuthor(new UpdateArticleResponse.ArticleBean.AuthorBean());
         User authorEntity = userService.getById(articleBean.getAuthorId());
         BeanUtils.copyProperties(authorEntity,articleBean.getAuthor());
         if(currentUsername!=null){
@@ -325,13 +325,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         articleBean.setAuthorId(null);
         articleBean.setId(null);
 
-        articlesSlugPutResponse.setArticle(articleBean);
-        return articlesSlugPutResponse;
+        updateArticleResponse.setArticle(articleBean);
+        return updateArticleResponse;
     }
 
     @Transactional
     @Override
-    public ArticlesSlugDeleteResponse articlesSlugDelete(String slug) {
+    public DeleteArticleResponse deleteArticle(String slug) {
         String currentUsername = JwtInterceptor.getCurrentUser();
         if(currentUsername==null){
             throw new BusinessException("user not logged in");
@@ -357,7 +357,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     @Override
-    public ArticlesSlugFavoritePostResponse articlesSlugFavoritePost(String slug) {
+    public FavoriteArticleResponse favoriteArticle(String slug) {
         //select article(slug) select user(currentUsername) insert fav(userId,articleId)
         String currentUsername = JwtInterceptor.getCurrentUser();
 
@@ -392,7 +392,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
     @Transactional
     @Override
-    public ArticlesSlugFavoriteDeleteResponse articlesSlugFavoriteDelete(String slug) {
+    public UnfavoriteArticleResponse unfavoriteArticle(String slug) {
         //select user(currentUsername) select article(slug) select userFav(userId,articleId)
         //delete userFav(serId,articleId)
         //select *,u.username,u.bio,u.image from article a join user u on a.authorId=u.id
@@ -406,8 +406,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
             throw new BusinessException("slug is empty");
         }
 
-        ArticlesSlugFavoriteDeleteResponse articlesSlugFavoriteDeleteResponse = new ArticlesSlugFavoriteDeleteResponse();
-        articlesSlugFavoriteDeleteResponse.setArticle(new ArticlesSlugFavoriteDeleteResponse.ArticleBean());
+        UnfavoriteArticleResponse unfavoriteArticleResponse = new UnfavoriteArticleResponse();
+        unfavoriteArticleResponse.setArticle(new UnfavoriteArticleResponse.ArticleBean());
 
 
         Boolean selected=userFavoritesMapper.selectFavoritedBycurrentUsernameAndSlug(currentUsername,slug);
@@ -418,7 +418,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         if(!deleted){
             throw new BusinessException("deleted failed");
         }
-        ArticlesSlugPutResponse.ArticleBean articleBean = articleMapper.getArticleBean(slug);
+        UpdateArticleResponse.ArticleBean articleBean = articleMapper.getArticleBean(slug);
         if(articleBean==null){
             throw new BusinessException("article not found");
         }
@@ -430,7 +430,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
         Integer favoriteCount = Math.toIntExact(userFavoritesService.lambdaQuery().eq(UserFavorites::getArticleId, articleId).count());
         articleBean.setFavoritesCount(favoriteCount);
-        articleBean.setAuthor(new ArticlesSlugPutResponse.ArticleBean.AuthorBean());
+        articleBean.setAuthor(new UpdateArticleResponse.ArticleBean.AuthorBean());
         User authorEntity = userService.getById(articleBean.getAuthorId());
         BeanUtils.copyProperties(authorEntity,articleBean.getAuthor());
         if(currentUsername!=null){
@@ -448,16 +448,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         articleBean.setId(null);
 
 
-        BeanUtils.copyProperties(articleBean,articlesSlugFavoriteDeleteResponse.getArticle());
-        return articlesSlugFavoriteDeleteResponse;
+        BeanUtils.copyProperties(articleBean, unfavoriteArticleResponse.getArticle());
+        return unfavoriteArticleResponse;
     }
 
     @Override
-    public ArticlesFeedResponse articlesFeed(ArticlesFeedRequest articlesFeedRequest) {
-        ArticlesFeedResponse articlesFeedResponse = new ArticlesFeedResponse();
-        articlesFeedResponse.setArticles(new ArrayList<ArticlesFeedResponse.ArticleBean>());
-        int limit = articlesFeedRequest.getLimit();
-        int offset = articlesFeedRequest.getOffset();
+    public ListFeedArticlesResponse listFeedArticles(ListFeedArticlesRequest listFeedArticlesRequest) {
+        ListFeedArticlesResponse listFeedArticlesResponse = new ListFeedArticlesResponse();
+        listFeedArticlesResponse.setArticles(new ArrayList<ListFeedArticlesResponse.ArticleBean>());
+        int limit = listFeedArticlesRequest.getLimit();
+        int offset = listFeedArticlesRequest.getOffset();
         if(limit<=0){
             limit=20;
         }
@@ -474,15 +474,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
 
 
-        List<ArticlesFeedResponse.ArticleBean> allList=
+        List<ListFeedArticlesResponse.ArticleBean> allList=
         articleMapper.getArticlesDTOAllListByuserId(user.getId());
         if(allList!=null){
-            articlesFeedResponse.setArticlesCount(allList.size());
+            listFeedArticlesResponse.setArticlesCount(allList.size());
         }
-        List<ArticlesFeedResponse.ArticleBean> list=
+        List<ListFeedArticlesResponse.ArticleBean> list=
         articleMapper.getArticlesDTOListByuserId(user.getId(),limit,offset);
         if(list!=null&&!list.isEmpty()) {
-            List<ArticlesFeedResponse.ArticleBean> articlesDTOList = list.stream().map(articlesDTO -> {
+            List<ListFeedArticlesResponse.ArticleBean> articlesDTOList = list.stream().map(articlesDTO -> {
                 Long articlesDTOId = articlesDTO.getId();
                 articlesDTO.setTagList(new ArrayList<>());
                 List<String> tagnameList = tagMapper.selectTagnameByarticleId(articlesDTOId);
@@ -501,10 +501,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 return articlesDTO;
             }).toList();
             if(articlesDTOList!=null){
-                articlesFeedResponse.setArticles(articlesDTOList);
+                listFeedArticlesResponse.setArticles(articlesDTOList);
             }
         }
-        return articlesFeedResponse;
+        return listFeedArticlesResponse;
     }
 
 

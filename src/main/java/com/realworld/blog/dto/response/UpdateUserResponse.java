@@ -6,7 +6,7 @@ package com.realworld.blog.dto.response;
  * @description TODO
  */
 
-public class UserUpdateResponse {
+public class UpdateUserResponse {
 
     /**
      * user : {"email":"john@example.com","username":"johnjacob","bio":null,"image":null,"token":"eyJhbGciOiJIUzI1NiJ9..."}

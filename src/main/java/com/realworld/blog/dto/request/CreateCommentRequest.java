@@ -6,7 +6,7 @@ package com.realworld.blog.dto.request;
  * @description TODO
  */
 
-public class CommentsCreateRequest {
+public class CreateCommentRequest {
 
     /**
      * comment : {"body":"This is a great article!"}

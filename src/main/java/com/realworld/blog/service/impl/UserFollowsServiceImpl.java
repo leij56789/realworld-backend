@@ -4,9 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.realworld.blog.common.BusinessException;
-import com.realworld.blog.dto.response.ProfilesUserFollowDeleteResponse;
-import com.realworld.blog.dto.response.ProfilesUserFollowResponse;
-import com.realworld.blog.dto.response.ProfilesUserResponse;
+import com.realworld.blog.dto.response.UnfollowUserResponse;
+import com.realworld.blog.dto.response.FollowUserResponse;
+import com.realworld.blog.dto.response.GetProfileResponse;
 import com.realworld.blog.entity.User;
 import com.realworld.blog.entity.UserFollows;
 import com.realworld.blog.interceptor.JwtInterceptor;
@@ -16,12 +16,10 @@ import com.realworld.blog.mapper.UserFollowsMapper;
 import com.realworld.blog.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.ast.Literal;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
 * @author jiaolei
@@ -37,13 +35,13 @@ public class UserFollowsServiceImpl extends ServiceImpl<UserFollowsMapper, UserF
     UserService userServiceImpl;
 
     @Override
-    public ProfilesUserResponse profilesUser(String username) {
+    public GetProfileResponse getProfile(String username) {
         String currentUsername= JwtInterceptor.getCurrentUser();
         if(StrUtil.isBlank(username)){
             throw new BusinessException("username is empty");
         }
-        ProfilesUserResponse profilesUserResponse = new ProfilesUserResponse();
-        profilesUserResponse.setProfile(new ProfilesUserResponse.ProfileBean());
+        GetProfileResponse getProfileResponse = new GetProfileResponse();
+        getProfileResponse.setProfile(new GetProfileResponse.ProfileBean());
 
         User user = userServiceImpl.lambdaQuery().eq(User::getUsername, username).one();
         if(user==null){
@@ -53,16 +51,16 @@ public class UserFollowsServiceImpl extends ServiceImpl<UserFollowsMapper, UserF
             User currentUser = userServiceImpl.lambdaQuery().eq(User::getUsername, currentUsername).one();
             if(this.lambdaQuery().eq(UserFollows::getFollowerId,currentUser.getId())
                     .eq(UserFollows::getFolloweeId,user.getId()).exists()){
-                profilesUserResponse.getProfile().setFollowing(true);
+                getProfileResponse.getProfile().setFollowing(true);
             }
         }
 
-        BeanUtils.copyProperties(user,profilesUserResponse.getProfile());
-        return profilesUserResponse;
+        BeanUtils.copyProperties(user, getProfileResponse.getProfile());
+        return getProfileResponse;
     }
 
     @Override
-    public ProfilesUserFollowResponse profilsesUserFollow(String username) {
+    public FollowUserResponse followUser(String username) {
         String currentUsername = JwtInterceptor.getCurrentUser();
         if(StrUtil.isBlank(currentUsername)){
             throw new BusinessException("user not logged in");
@@ -95,15 +93,15 @@ public class UserFollowsServiceImpl extends ServiceImpl<UserFollowsMapper, UserF
         userFollows.setFolloweeId(user.getId());
         this.save(userFollows);
 
-        ProfilesUserFollowResponse profilesUserFollowResponse = new ProfilesUserFollowResponse();
-        profilesUserFollowResponse.setProfile(new ProfilesUserFollowResponse.ProfileBean());
-        BeanUtils.copyProperties(user,profilesUserFollowResponse.getProfile());
-        profilesUserFollowResponse.getProfile().setFollowing(true);
-        return profilesUserFollowResponse;
+        FollowUserResponse followUserResponse = new FollowUserResponse();
+        followUserResponse.setProfile(new FollowUserResponse.ProfileBean());
+        BeanUtils.copyProperties(user, followUserResponse.getProfile());
+        followUserResponse.getProfile().setFollowing(true);
+        return followUserResponse;
     }
 
     @Override
-    public ProfilesUserFollowDeleteResponse profilsesUserFollowDelete(String username) {
+    public UnfollowUserResponse unfollowUser(String username) {
         //用两个name查询两个user,两个id查询follows再删除
         if(username==null){
             throw new BusinessException("username is empty");
@@ -136,10 +134,10 @@ public class UserFollowsServiceImpl extends ServiceImpl<UserFollowsMapper, UserF
         }
         this.remove(wrapper);
 
-        ProfilesUserFollowDeleteResponse profilesUserFollowDeleteResponse = new ProfilesUserFollowDeleteResponse();
-        profilesUserFollowDeleteResponse.setProfile(new ProfilesUserFollowDeleteResponse.ProfileBean());
-        BeanUtils.copyProperties(targetUser,profilesUserFollowDeleteResponse.getProfile());
-        return profilesUserFollowDeleteResponse;
+        UnfollowUserResponse unfollowUserResponse = new UnfollowUserResponse();
+        unfollowUserResponse.setProfile(new UnfollowUserResponse.ProfileBean());
+        BeanUtils.copyProperties(targetUser, unfollowUserResponse.getProfile());
+        return unfollowUserResponse;
     }
 }
 

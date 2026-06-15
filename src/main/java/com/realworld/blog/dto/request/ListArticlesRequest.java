@@ -6,7 +6,7 @@ package com.realworld.blog.dto.request;
  * @description TODO
  */
 
-public class ArticlesGetRequest {
+public class ListArticlesRequest {
 
     /**
      * limit : 20

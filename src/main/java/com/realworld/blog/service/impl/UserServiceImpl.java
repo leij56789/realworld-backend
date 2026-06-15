@@ -4,9 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.realworld.blog.common.BusinessException;
-import com.realworld.blog.dto.request.UserUpdateRequest;
-import com.realworld.blog.dto.request.UsersLoginRequest;
-import com.realworld.blog.dto.request.UsersRequest;
+import com.realworld.blog.dto.request.UpdateUserRequest;
+import com.realworld.blog.dto.request.LoginUserRequest;
+import com.realworld.blog.dto.request.RegisterUser;
 import com.realworld.blog.dto.response.*;
 import com.realworld.blog.entity.User;
 import com.realworld.blog.interceptor.JwtInterceptor;
@@ -65,9 +65,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 //    }
 
 @Override
-public UsersLoginResponse usersLogin(UsersLoginRequest usersLoginRequest) {
-    String email = usersLoginRequest.getUser().getEmail();
-    String password = usersLoginRequest.getUser().getPassword();
+public LoginUserResponse loginUser(LoginUserRequest loginUserRequest) {
+    String email = loginUserRequest.getUser().getEmail();
+    String password = loginUserRequest.getUser().getPassword();
 
     System.out.println("=== 登录调试 ===");
     System.out.println("前端邮箱: " + email);
@@ -93,19 +93,19 @@ public UsersLoginResponse usersLogin(UsersLoginRequest usersLoginRequest) {
     String username = user.getUsername();
         String token = jwtUtil.generateToken(username);
 
-        UsersLoginResponse usersLoginResponse = new UsersLoginResponse();
-        usersLoginResponse.setUser(new UsersLoginResponse.UserBean());
-        BeanUtils.copyProperties(user,usersLoginResponse.getUser());
+        LoginUserResponse loginUserResponse = new LoginUserResponse();
+        loginUserResponse.setUser(new LoginUserResponse.UserBean());
+        BeanUtils.copyProperties(user, loginUserResponse.getUser());
 
-        usersLoginResponse.getUser().setToken(token);
-        return usersLoginResponse;
+        loginUserResponse.getUser().setToken(token);
+        return loginUserResponse;
 }
 
     @Override
-    public UsersResponse users(UsersRequest usersRequest) {
-        String username = usersRequest.getUser().getUsername();
-        String email = usersRequest.getUser().getEmail();
-        String password = usersRequest.getUser().getPassword();
+    public RegisterUserResponse registerUser(RegisterUser registerUser) {
+        String username = registerUser.getUser().getUsername();
+        String email = registerUser.getUser().getEmail();
+        String password = registerUser.getUser().getPassword();
         if(StrUtil.isBlankIfStr(username)||StrUtil.isBlankIfStr(email)||StrUtil.isBlankIfStr(password)){
             throw new BusinessException("username or email or password is empty");
         }
@@ -118,21 +118,21 @@ public UsersLoginResponse usersLogin(UsersLoginRequest usersLoginRequest) {
         }
         String encodePassword = bCryptPasswordEncoder.encode(password);
         User user = new User();
-        BeanUtils.copyProperties(usersRequest.getUser(),user);
+        BeanUtils.copyProperties(registerUser.getUser(),user);
         user.setPassword(encodePassword);
         int result = userMapper.insert(user);
 
-        String token = jwtUtil.generateToken(usersRequest.getUser().getUsername());
-        UsersResponse usersResponse = new UsersResponse();
-        usersResponse.setUser(new UsersResponse.UserBean());
-        BeanUtils.copyProperties(usersRequest.getUser(),usersResponse.getUser());
-        usersResponse.getUser().setToken(token);
-        return usersResponse;
+        String token = jwtUtil.generateToken(registerUser.getUser().getUsername());
+        RegisterUserResponse registerUserResponse = new RegisterUserResponse();
+        registerUserResponse.setUser(new RegisterUserResponse.UserBean());
+        BeanUtils.copyProperties(registerUser.getUser(), registerUserResponse.getUser());
+        registerUserResponse.getUser().setToken(token);
+        return registerUserResponse;
     }
 
 
     @Override
-    public UserAuthResponse userAuth() {
+    public GetUserResponse getUser() {
 //        if(StrUtil.isBlankIfStr(authorization)){
 //            throw new BusinessException("token is empty");
 //        }
@@ -146,19 +146,19 @@ public UsersLoginResponse usersLogin(UsersLoginRequest usersLoginRequest) {
             throw new BusinessException("username is invalid");
         }
 
-        UserAuthResponse userAuthResponse = new UserAuthResponse();
-        userAuthResponse.setUser(new UserAuthResponse.UserBean());
-        BeanUtils.copyProperties(user, userAuthResponse.getUser());
-        userAuthResponse.getUser().setToken(token);
+        GetUserResponse getUserResponse = new GetUserResponse();
+        getUserResponse.setUser(new GetUserResponse.UserBean());
+        BeanUtils.copyProperties(user, getUserResponse.getUser());
+        getUserResponse.getUser().setToken(token);
 
-        return userAuthResponse;
+        return getUserResponse;
     }
 
     @Override
-    public UserUpdateResponse userUpdate(UserUpdateRequest userUpdateRequest) {
-        String bio = userUpdateRequest.getUser().getBio();
-        String image = userUpdateRequest.getUser().getImage();
-        String email = userUpdateRequest.getUser().getEmail();
+    public UpdateUserResponse updateUser(UpdateUserRequest updateUserRequest) {
+        String bio = updateUserRequest.getUser().getBio();
+        String image = updateUserRequest.getUser().getImage();
+        String email = updateUserRequest.getUser().getEmail();
         String username = JwtInterceptor.getCurrentUser();
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
         if(StrUtil.isNotBlank(bio)){
@@ -182,11 +182,11 @@ public UsersLoginResponse usersLogin(UsersLoginRequest usersLoginRequest) {
 //                .eq(User::getUsername,username).update();
         User user = this.lambdaQuery().eq(User::getUsername, username).one();
 
-        UserUpdateResponse userUpdateResponse = new UserUpdateResponse();
-        userUpdateResponse.setUser(new UserUpdateResponse.UserBean());
-        BeanUtils.copyProperties(user,userUpdateResponse.getUser());
-        userUpdateResponse.getUser().setToken(JwtInterceptor.getCurrentToken());
-        return userUpdateResponse;
+        UpdateUserResponse updateUserResponse = new UpdateUserResponse();
+        updateUserResponse.setUser(new UpdateUserResponse.UserBean());
+        BeanUtils.copyProperties(user, updateUserResponse.getUser());
+        updateUserResponse.getUser().setToken(JwtInterceptor.getCurrentToken());
+        return updateUserResponse;
     }
 
 }

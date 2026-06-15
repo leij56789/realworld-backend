@@ -1,10 +1,9 @@
 package com.realworld.blog.controller;
 
-import com.realworld.blog.dto.response.ProfilesUserFollowDeleteResponse;
-import com.realworld.blog.dto.response.ProfilesUserFollowResponse;
-import com.realworld.blog.dto.response.ProfilesUserResponse;
+import com.realworld.blog.dto.response.UnfollowUserResponse;
+import com.realworld.blog.dto.response.FollowUserResponse;
+import com.realworld.blog.dto.response.GetProfileResponse;
 import com.realworld.blog.service.UserFollowsService;
-import com.realworld.blog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +18,16 @@ public class ProfileController {
     @Autowired
     UserFollowsService userFollowsService;
     @GetMapping("/{username}")
-    public ProfilesUserResponse profilesUser(@PathVariable String username){
-        return userFollowsService.profilesUser(username);
+    public GetProfileResponse getProfile(@PathVariable String username){
+        return userFollowsService.getProfile(username);
     }
     @PostMapping("/{username}/follow")
-    public ProfilesUserFollowResponse profilesUserFollow(@PathVariable String username){
-        return userFollowsService.profilsesUserFollow(username);
+    public FollowUserResponse followUser(@PathVariable String username){
+        return userFollowsService.followUser(username);
     }
     @DeleteMapping("/{username}/follow")
-    public ProfilesUserFollowDeleteResponse profilesUserFollowDelete(@PathVariable String username){
-        return userFollowsService.profilsesUserFollowDelete(username);
+    public UnfollowUserResponse unfollowUser(@PathVariable String username){
+        return userFollowsService.unfollowUser(username);
     }
 
 }

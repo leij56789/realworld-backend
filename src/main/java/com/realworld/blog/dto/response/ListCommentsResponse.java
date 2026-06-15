@@ -11,7 +11,7 @@ import java.util.List;
  * @description TODO
  */
 @Data
-public class CommentsListResponse {
+public class ListCommentsResponse {
 
     private List<CommentsBean> comments;
 

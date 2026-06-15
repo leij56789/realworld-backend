@@ -1,15 +1,15 @@
-package com.realworld.blog.dto.response;
+package com.realworld.blog.dto.request;
 
 /**
  * @author jiaolei
- * @date 2026-06-09 16:08
+ * @date 2026-06-10 11:27
  * @description TODO
  */
 
-public class UsersResponse extends Response{
+public class UpdateUserRequest {
 
     /**
-     * user : {"email":"string","token":"string","username":"string","bio":"string | null","image":"string | null"}
+     * user : {"email":"jake@jake.jake","bio":"I like to skateboard","image":"https://i.stack.imgur.com/xHWG8.jpg"}
      */
 
     private UserBean user;
@@ -24,16 +24,12 @@ public class UsersResponse extends Response{
 
     public static class UserBean {
         /**
-         * email : string
-         * token : string
-         * username : string
-         * bio : string | null
-         * image : string | null
+         * email : jake@jake.jake
+         * bio : I like to skateboard
+         * image : https://i.stack.imgur.com/xHWG8.jpg
          */
 
         private String email;
-        private String token;
-        private String username;
         private String bio;
         private String image;
 
@@ -43,22 +39,6 @@ public class UsersResponse extends Response{
 
         public void setEmail(String email) {
             this.email = email;
-        }
-
-        public String getToken() {
-            return token;
-        }
-
-        public void setToken(String token) {
-            this.token = token;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
         }
 
         public String getBio() {

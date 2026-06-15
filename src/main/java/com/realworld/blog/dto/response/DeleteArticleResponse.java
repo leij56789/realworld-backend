@@ -6,5 +6,5 @@ package com.realworld.blog.dto.response;
  * @description TODO
  */
 
-public class ArticlesSlugDeleteResponse {
+public class DeleteArticleResponse {
 }

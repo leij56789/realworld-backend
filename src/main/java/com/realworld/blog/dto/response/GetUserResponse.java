@@ -6,7 +6,7 @@ package com.realworld.blog.dto.response;
  * @description TODO
  */
 
-public class UserAuthResponse {
+public class GetUserResponse {
 
     /**
      * user : {"email":"...","username":"...","bio":"...","image":"...","token":"..."}

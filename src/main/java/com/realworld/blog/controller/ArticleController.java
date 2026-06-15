@@ -2,10 +2,10 @@ package com.realworld.blog.controller;
 
 import com.realworld.blog.annotation.Auth;
 import com.realworld.blog.annotation.Log;
-import com.realworld.blog.dto.request.ArticlesFeedRequest;
-import com.realworld.blog.dto.request.ArticlesGetRequest;
-import com.realworld.blog.dto.request.ArticlesPostRequest;
-import com.realworld.blog.dto.request.ArticlesSlugPutRequest;
+import com.realworld.blog.dto.request.ListFeedArticlesRequest;
+import com.realworld.blog.dto.request.ListArticlesRequest;
+import com.realworld.blog.dto.request.CreateArticleRequest;
+import com.realworld.blog.dto.request.UpdateArticleRequest;
 import com.realworld.blog.dto.response.*;
 import com.realworld.blog.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,53 +26,53 @@ public class ArticleController {
     @Auth
     @Log("创建文章")
     @PostMapping("")
-    public ArticlesPostResponse articlesPost(@RequestBody ArticlesPostRequest articlesPostRequest){
-        return articleService.articlesPost(articlesPostRequest);
+    public CreateArticleResponse createArticle(@RequestBody CreateArticleRequest articlesPostRequest){
+        return articleService.createArticle(articlesPostRequest);
     }
 //    @Auth
     @Log("获取单片文章")
     @GetMapping("/{slug}")
-    public ArticlesSlugGetResponse articlesSlugGet(@PathVariable String slug){
-        return articleService.articlesSlugGet(slug);
+    public GetArticleResponse getArticle(@PathVariable String slug){
+        return articleService.getArticle(slug);
     }
 //    @Auth
     @Log("更新文章")
     @PutMapping("/{slug}")
-    public ArticlesSlugPutResponse articlesSlugPut(@RequestBody ArticlesSlugPutRequest articlesSlugPutRequest
+    public UpdateArticleResponse updateArticle(@RequestBody UpdateArticleRequest updateArticleRequest
     , @PathVariable String slug){
-        return articleService.articlesSlugPut(articlesSlugPutRequest,slug);
+        return articleService.updateArticle(updateArticleRequest,slug);
     }
 //    @Auth
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Log("删除文章")
     @DeleteMapping("/{slug}")
-    public ArticlesSlugDeleteResponse articlesSlugDelete(@PathVariable String slug){
-        return articleService.articlesSlugDelete(slug);
+    public DeleteArticleResponse deleteArticle(@PathVariable String slug){
+        return articleService.deleteArticle(slug);
     }
 //    @Auth
     @Log("获取文章列表")
     @GetMapping("")
-    public ArticlesGetResponse articlesGet(ArticlesGetRequest articlesGetRequest){
-        return articleService.articlesGet(articlesGetRequest);
+    public ListArticlesResponse listArticles(ListArticlesRequest listArticlesRequest){
+        return articleService.listArticles(listArticlesRequest);
     }
 //    @Auth
     @Log("获取Feed文章")
     @GetMapping("/feed")
-    public ArticlesFeedResponse articlesFeed(ArticlesFeedRequest articlesFeedRequest){
-        return articleService.articlesFeed(articlesFeedRequest);
+    public ListFeedArticlesResponse listFeedArticles(ListFeedArticlesRequest listFeedArticlesRequest){
+        return articleService.listFeedArticles(listFeedArticlesRequest);
     }
 //    @Auth
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Log("点赞文章")
     @PostMapping("/{slug}/favorite")
-    public ArticlesSlugFavoritePostResponse articlesSlugFavoritePost(@PathVariable String slug){
-        return articleService.articlesSlugFavoritePost(slug);
+    public FavoriteArticleResponse favoriteArticle(@PathVariable String slug){
+        return articleService.favoriteArticle(slug);
     }
 //    @Auth
     @Log("取消点赞")
     @DeleteMapping("/{slug}/favorite")
-    public ArticlesSlugFavoriteDeleteResponse articlesSlugFavoriteDelete(@PathVariable String slug){
-        return articleService.articlesSlugFavoriteDelete(slug);
+    public UnfavoriteArticleResponse unfavoriteArticle(@PathVariable String slug){
+        return articleService.unfavoriteArticle(slug);
     }
 
 }

@@ -1,13 +1,13 @@
 package com.realworld.blog.controller;
 
 import com.realworld.blog.annotation.Log;
-import com.realworld.blog.dto.request.UserUpdateRequest;
-import com.realworld.blog.dto.request.UsersLoginRequest;
-import com.realworld.blog.dto.request.UsersRequest;
-import com.realworld.blog.dto.response.UserAuthResponse;
-import com.realworld.blog.dto.response.UserUpdateResponse;
-import com.realworld.blog.dto.response.UsersLoginResponse;
-import com.realworld.blog.dto.response.UsersResponse;
+import com.realworld.blog.dto.request.UpdateUserRequest;
+import com.realworld.blog.dto.request.LoginUserRequest;
+import com.realworld.blog.dto.request.RegisterUser;
+import com.realworld.blog.dto.response.GetUserResponse;
+import com.realworld.blog.dto.response.UpdateUserResponse;
+import com.realworld.blog.dto.response.LoginUserResponse;
+import com.realworld.blog.dto.response.RegisterUserResponse;
 import com.realworld.blog.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,23 +29,23 @@ public class UserController {
 //    @PassToken
     @Log("用户登录")
     @PostMapping("/users/login")
-    public UsersLoginResponse usersLogin(@RequestBody UsersLoginRequest usersLoginRequest){
-        return userService.usersLogin(usersLoginRequest);
+    public LoginUserResponse loginUser(@RequestBody LoginUserRequest loginUserRequest){
+        return userService.loginUser(loginUserRequest);
     }
 //    @PassToken
     @Log("用户注册")
     @PostMapping("/users")
-    public UsersResponse users(@RequestBody UsersRequest usersRequest){
-        return userService.users(usersRequest);
+    public RegisterUserResponse registerUser(@RequestBody RegisterUser registerUser){
+        return userService.registerUser(registerUser);
     }
     @Log("用户验证")
     @GetMapping("/user")
-    public UserAuthResponse userAuth(){
-        return userService.userAuth();
+    public GetUserResponse getUser(){
+        return userService.getUser();
     }
     @Log("用户更新")
     @PutMapping("/user")
-    public UserUpdateResponse userUpdate(@RequestBody UserUpdateRequest userUpdateRequest){
-        return userService.userUpdate(userUpdateRequest);
+    public UpdateUserResponse updateUser(@RequestBody UpdateUserRequest updateUserRequest){
+        return userService.updateUser(updateUserRequest);
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
  * @description TODO
  */
 
-public class ArticlesPostRequest {
+public class CreateArticleRequest {
 
     /**
      * article : {"slug":"how-to-train-your-dragon","title":"How to train your dragon","description":"Ever wonder how?","body":"You have to believe","tagList":["dragons","training"],"createdAt":"2026-06-11T10:00:00.000Z","updatedAt":"2026-06-11T10:00:00.000Z","favorited":false,"favoritesCount":0,"author":{"username":"johnjacob1","bio":"I love coding!","image":null,"following":false}}

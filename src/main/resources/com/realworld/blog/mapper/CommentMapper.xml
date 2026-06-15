@@ -21,30 +21,30 @@
         (#{body},(select id from article a where a.slug=#{slug}),(select u.id from user u where u.username=#{currentUsername}))
     </insert>
     <select id="getCommentBean"
-            resultType="com.realworld.blog.dto.response.CommentsCreateResponse$CommentBean">
+            resultType="com.realworld.blog.dto.response.CreateCommentResponse$CommentBean">
         select c.*,u.id,u.username,u.bio,u.image, a.author_id as articleAuthorId from comment c
             join user u on u.id=c.author_id join article a on a.id=c.article_id
         where u.username=#{currentUsername} and a.slug=#{slug} order by c.created_at desc
     </select>
     <select id="getCommentBeanByCommentId"
-            resultType="com.realworld.blog.dto.response.CommentsCreateResponse$CommentBean">
+            resultType="com.realworld.blog.dto.response.CreateCommentResponse$CommentBean">
         select c.*,u.id as "author.userId",u.username as "author.username",u.bio as "author.bio",u.image as "author.image", a.author_id as articleAuthorId from comment c
         join user u on u.id=c.author_id join article a on a.id=c.article_id
         where c.id=#{id}
     </select>
-    <select id="getCommentBeanBySlug" resultType="com.realworld.blog.dto.response.CommentsListResponse$CommentsBean">
+    <select id="getCommentBeanBySlug" resultType="com.realworld.blog.dto.response.ListCommentsResponse$CommentsBean">
         select c.*,u.id as "author.userId",u.username as "author.username",u.bio as "author.bio",u.image as "author.image", a.author_id as articleAuthorId from comment c
                                                                                                                                                                     join user u on u.id=c.author_id join article a on a.id=c.article_id
         where a.slug=#{slug}
     </select>
     <select id="getCommentBeanByArticleId"
-            resultType="com.realworld.blog.dto.response.CommentsListResponse$CommentsBean">
+            resultType="com.realworld.blog.dto.response.ListCommentsResponse$CommentsBean">
         select c.*,u.id as "author.userId",u.username as "author.username",u.bio as "author.bio",u.image as "author.image", a.author_id as articleAuthorId from comment c
                                                                                                                                                                     join user u on u.id=c.author_id join article a on a.id=c.article_id
         where a.id=#{id} order by c.created_at desc
     </select>
     <!--    <select id="getCommentBeanByCommentId"-->
-<!--            resultType="com.realworld.blog.dto.response.CommentsCreateResponse$CommentBean">-->
+<!--            resultType="com.realworld.blog.dto.response.CreateCommentResponse$CommentBean">-->
 <!--        select c.*,u.id as userId,u.username,u.bio,u.image,a.author_id as articleAuthorId from comment c-->
 <!--                                                                                                                                                                                    join user u on u.id=c.author_id join article a on a.id=c.article_id-->
 <!--        where c.id=#{id}-->

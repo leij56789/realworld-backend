@@ -1,10 +1,10 @@
 package com.realworld.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.realworld.blog.dto.request.CommentsCreateRequest;
-import com.realworld.blog.dto.response.CommentDeleteResponse;
-import com.realworld.blog.dto.response.CommentsCreateResponse;
-import com.realworld.blog.dto.response.CommentsListResponse;
+import com.realworld.blog.dto.request.CreateCommentRequest;
+import com.realworld.blog.dto.response.CreateCommentResponse;
+import com.realworld.blog.dto.response.DeleteCommentResponse;
+import com.realworld.blog.dto.response.ListCommentsResponse;
 import com.realworld.blog.entity.Comment;
 
 /**
@@ -14,9 +14,9 @@ import com.realworld.blog.entity.Comment;
 */
 public interface CommentService extends IService<Comment> {
 
-    CommentsListResponse commentsList(String slug);
+    ListCommentsResponse listComments(String slug);
 
-    CommentsCreateResponse commentsCreate(CommentsCreateRequest commentsCreateRequest, String slug);
+    CreateCommentResponse createComment(CreateCommentRequest createCommentRequest, String slug);
 
-    CommentDeleteResponse commentDelete(String slug, Long id);
+    DeleteCommentResponse deleteComment(String slug, Long id);
 }

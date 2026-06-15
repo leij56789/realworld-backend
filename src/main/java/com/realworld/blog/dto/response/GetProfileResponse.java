@@ -6,7 +6,7 @@ package com.realworld.blog.dto.response;
  * @description TODO
  */
 
-public class ProfilesUserResponse {
+public class GetProfileResponse {
 
     /**
      * profile : {"username":"johnjacob1","bio":"I love coding!","image":null,"following":false}

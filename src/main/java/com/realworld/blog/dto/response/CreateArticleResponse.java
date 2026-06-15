@@ -9,7 +9,7 @@ import java.util.List;
  * @description TODO
  */
 
-public class ArticlesPostResponse {
+public class CreateArticleResponse {
 
     /**
      * article : {"slug":"how-to-train-your-dragon","title":"How to train your dragon","description":"Ever wonder how?","body":"You have to believe","tagList":["dragons","training"],"createdAt":"2026-06-11 17:55:44","updatedAt":"2026-06-11 17:55:44","favorited":false,"favoritesCount":0,"author":{"username":"johnjacob1","bio":"I love coding!","image":null,"following":false}}

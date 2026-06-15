@@ -11,7 +11,7 @@ import java.util.List;
  * @description TODO
  */
 @Data
-public class ArticlesSlugPutResponse {
+public class UpdateArticleResponse {
 
     /**
      * article : {"slug":"how-to-train-your-dragon-2","title":"How to train your dragon 2","description":"The sequel","body":"New content here","tagList":["dragons","training"],"createdAt":"2026-06-11T10:00:00.000Z","updatedAt":"2026-06-11T12:00:00.000Z","favorited":false,"favoritesCount":0,"author":{"username":"johnjacob1","bio":"I love coding!","image":null,"following":false}}

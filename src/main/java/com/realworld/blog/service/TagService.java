@@ -1,7 +1,7 @@
 package com.realworld.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.realworld.blog.dto.response.TagListResponse;
+import com.realworld.blog.dto.response.ListTagsResponse;
 import com.realworld.blog.entity.Tag;
 
 /**
@@ -12,5 +12,5 @@ import com.realworld.blog.entity.Tag;
 public interface TagService extends IService<Tag> {
 
 
-    TagListResponse tagList();
+    ListTagsResponse tagList();
 }

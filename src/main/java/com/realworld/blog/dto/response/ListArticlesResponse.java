@@ -15,8 +15,8 @@ import java.util.List;
  * 文章列表响应实体
  */
 @Data
-public class ArticlesGetResponse {
-    private List<ArticlesGetResponse.ArticlesDTO> articles;
+public class ListArticlesResponse {
+    private List<ListArticlesResponse.ArticlesDTO> articles;
     private Integer articlesCount;
 
     @Data

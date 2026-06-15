@@ -1,10 +1,10 @@
 package com.realworld.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.realworld.blog.dto.request.ArticlesFeedRequest;
-import com.realworld.blog.dto.request.ArticlesGetRequest;
-import com.realworld.blog.dto.request.ArticlesPostRequest;
-import com.realworld.blog.dto.request.ArticlesSlugPutRequest;
+import com.realworld.blog.dto.request.ListFeedArticlesRequest;
+import com.realworld.blog.dto.request.ListArticlesRequest;
+import com.realworld.blog.dto.request.CreateArticleRequest;
+import com.realworld.blog.dto.request.UpdateArticleRequest;
 import com.realworld.blog.dto.response.*;
 import com.realworld.blog.entity.Article;
 
@@ -15,19 +15,19 @@ import com.realworld.blog.entity.Article;
 */
 public interface ArticleService extends IService<Article> {
 
-    ArticlesPostResponse articlesPost(ArticlesPostRequest articlesPostRequest);
+    CreateArticleResponse createArticle(CreateArticleRequest articlesPostRequest);
 
-    ArticlesSlugGetResponse articlesSlugGet(String slug);
+    GetArticleResponse getArticle(String slug);
 
-    ArticlesGetResponse articlesGet(ArticlesGetRequest articlesGetRequest);
+    ListArticlesResponse listArticles(ListArticlesRequest listArticlesRequest);
 
-    ArticlesSlugPutResponse articlesSlugPut(ArticlesSlugPutRequest articlesSlugPutRequest, String slug);
+    UpdateArticleResponse updateArticle(UpdateArticleRequest updateArticleRequest, String slug);
 
-    ArticlesSlugDeleteResponse articlesSlugDelete(String slug);
+    DeleteArticleResponse deleteArticle(String slug);
 
-    ArticlesSlugFavoritePostResponse articlesSlugFavoritePost(String slug);
+    FavoriteArticleResponse favoriteArticle(String slug);
 
-    ArticlesSlugFavoriteDeleteResponse articlesSlugFavoriteDelete(String slug);
+    UnfavoriteArticleResponse unfavoriteArticle(String slug);
 
-    ArticlesFeedResponse articlesFeed(ArticlesFeedRequest articlesFeedRequest);
+    ListFeedArticlesResponse listFeedArticles(ListFeedArticlesRequest listFeedArticlesRequest);
 }

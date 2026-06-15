@@ -6,7 +6,7 @@ package com.realworld.blog.dto.request;
  * @description TODO
  */
 
-public class ArticlesSlugPutRequest {
+public class UpdateArticleRequest {
 
     /**
      * article : {"title":"How to train your dragon 2","description":"The sequel","body":"New content here"}

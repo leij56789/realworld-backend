@@ -10,12 +10,11 @@ import java.util.List;
  * @date 2026-06-11 14:16
  * @description TODO
  */
-import lombok.Data;
-import java.util.List;
-@Data
-public class ArticlesSlugFavoritePostResponse {
 
-    private ArticlesSlugFavoritePostResponse.ArticleDTO article;
+@Data
+public class FavoriteArticleResponse {
+
+    private FavoriteArticleResponse.ArticleDTO article;
 
     @Data
     public static class ArticleDTO {

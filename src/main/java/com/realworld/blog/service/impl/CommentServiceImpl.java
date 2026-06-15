@@ -3,10 +3,10 @@ package com.realworld.blog.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.realworld.blog.common.BusinessException;
-import com.realworld.blog.dto.request.CommentsCreateRequest;
-import com.realworld.blog.dto.response.CommentDeleteResponse;
-import com.realworld.blog.dto.response.CommentsCreateResponse;
-import com.realworld.blog.dto.response.CommentsListResponse;
+import com.realworld.blog.dto.request.CreateCommentRequest;
+import com.realworld.blog.dto.response.DeleteCommentResponse;
+import com.realworld.blog.dto.response.CreateCommentResponse;
+import com.realworld.blog.dto.response.ListCommentsResponse;
 import com.realworld.blog.entity.Article;
 import com.realworld.blog.entity.Comment;
 import com.realworld.blog.entity.User;
@@ -50,10 +50,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
 
 
     @Override
-    public CommentsListResponse commentsList(String slug) {
+    public ListCommentsResponse listComments(String slug) {
         //res1+following
-        CommentsListResponse commentsListResponse = new CommentsListResponse();
-        commentsListResponse.setComments(new ArrayList<>());
+        ListCommentsResponse listCommentsResponse = new ListCommentsResponse();
+        listCommentsResponse.setComments(new ArrayList<>());
 
         String currentUsername = JwtInterceptor.getCurrentUser();
         if(slug==null){
@@ -65,15 +65,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
             throw new BusinessException("article not found");
         }
 //        List<CommentsListResponse.CommentsBean> commentsBeanList=commentMapper.getCommentBeanBySlug(slug);
-        List<CommentsListResponse.CommentsBean> commentsBeanList=commentMapper.getCommentBeanByArticleId(article.getId());
+        List<ListCommentsResponse.CommentsBean> commentsBeanList=commentMapper.getCommentBeanByArticleId(article.getId());
         if(commentsBeanList!=null){
-            commentsListResponse.setComments(commentsBeanList);
+            listCommentsResponse.setComments(commentsBeanList);
             if(currentUsername!=null){
                 User user = userService.lambdaQuery().eq(User::getUsername, currentUsername).one();
                 if(user==null){
                     throw new BusinessException("user not found");
                 }
-                List<CommentsListResponse.CommentsBean> list = commentsBeanList.stream().filter(commentsBean -> (commentsBean != null && commentsBean.getAuthor() != null))
+                List<ListCommentsResponse.CommentsBean> list = commentsBeanList.stream().filter(commentsBean -> (commentsBean != null && commentsBean.getAuthor() != null))
                         .map(commentsBean -> {
 
                             Long followeeId = commentsBean.getAuthor().getUserId();
@@ -87,25 +87,25 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
                             return commentsBean;
                         }).toList();
                 if(list!=null){
-                    commentsListResponse.setComments(list);
+                    listCommentsResponse.setComments(list);
                 }
             }
 
         }
-        return commentsListResponse;
+        return listCommentsResponse;
     }
 
     @Override
-    public CommentsCreateResponse commentsCreate(CommentsCreateRequest commentsCreateRequest, String slug) {
+    public CreateCommentResponse createComment(CreateCommentRequest createCommentRequest, String slug) {
         //insert into comment (body,article_id,author_id)
         // (#{body},(select id from article a where a.slug=#{slug}),(select u.id from user u where u.username=#{currentUsername}))
         //select *,u.id,u.username,u.bio,u.image a.articleAuthorId from comment c join user u on u.id=c.authorId join article a on a.id=c.article.id
         //where u.username=#{currentUsername} and a.slug=#{slug}
         //select userFollow(c.authorId,c.articleId)
         // res1+following
-        CommentsCreateResponse commentsCreateResponse = new CommentsCreateResponse();
-        commentsCreateResponse.setComment(new CommentsCreateResponse.CommentBean());
-        commentsCreateResponse.getComment().setAuthor(new CommentsCreateResponse.CommentBean.AuthorBean());
+        CreateCommentResponse createCommentResponse = new CreateCommentResponse();
+        createCommentResponse.setComment(new CreateCommentResponse.CommentBean());
+        createCommentResponse.getComment().setAuthor(new CreateCommentResponse.CommentBean.AuthorBean());
 
         String currentUsername = JwtInterceptor.getCurrentUser();
         if(StrUtil.isBlank(currentUsername)){
@@ -114,7 +114,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
         if(StrUtil.isBlank(slug)){
             throw new BusinessException("slug is empty");
         }
-        String body = commentsCreateRequest.getComment().getBody();
+        String body = createCommentRequest.getComment().getBody();
         if(StrUtil.isBlank(body)){
             throw new BusinessException("comment is empty");
         }
@@ -137,7 +137,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
             throw new BusinessException("insert failed");
         }
 //        CommentsCreateResponse.CommentBean commentBean=commentMapper.getCommentBean(currentUsername,slug);
-        CommentsCreateResponse.CommentBean commentBean=commentMapper.getCommentBeanByCommentId(comment.getId());
+        CreateCommentResponse.CommentBean commentBean=commentMapper.getCommentBeanByCommentId(comment.getId());
         System.out.println(commentBean.toString());
         if(commentBean==null){
             throw new BusinessException("comment not found");
@@ -150,14 +150,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
             commentBean.getAuthor().setFollowing(false);
         }
 
-        commentsCreateResponse.setComment(commentBean);
-        return commentsCreateResponse;
+        createCommentResponse.setComment(commentBean);
+        return createCommentResponse;
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     @Override
-    public CommentDeleteResponse commentDelete(String slug, Long id) {
+    public DeleteCommentResponse deleteComment(String slug, Long id) {
         //
         String currentUsername = JwtInterceptor.getCurrentUser();
         if(StrUtil.isBlank(currentUsername)){

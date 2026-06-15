@@ -7,7 +7,7 @@ package com.realworld.blog.dto.response;
  * @description TODO
  */
 
-public class UsersLoginResponse extends Response{
+public class LoginUserResponse extends Response{
 
     /**
      * user : {"email":"john@example.com","username":"johnjacob","bio":"I like to skateboard","image":"https://...","token":"eyJhbGciOiJIUzI1NiJ9..."}

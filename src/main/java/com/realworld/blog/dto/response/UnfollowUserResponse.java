@@ -6,7 +6,7 @@ package com.realworld.blog.dto.response;
  * @description TODO
  */
 
-public class ProfilesUserFollowDeleteResponse {
+public class UnfollowUserResponse {
 
     /**
      * profile : {"username":"alice","bio":"Frontend developer, love React","image":"https://api.realworld.io/images/alice.jpg","following":false}

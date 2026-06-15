@@ -1,7 +1,7 @@
 package com.realworld.blog.controller;
 
 import com.realworld.blog.annotation.Log;
-import com.realworld.blog.dto.response.TagListResponse;
+import com.realworld.blog.dto.response.ListTagsResponse;
 import com.realworld.blog.service.ArticleService;
 import com.realworld.blog.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class TabController {
     //    @Auth
     @Log("获取标签列表")
     @GetMapping("")
-    public TagListResponse TagList(){
+    public ListTagsResponse listTags(){
         return tagService.tagList();
     }
 }

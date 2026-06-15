@@ -11,8 +11,8 @@ import java.util.List;
  * @description TODO
  */
 @Data
-public class ArticlesFeedResponse {
-        private List<ArticlesFeedResponse.ArticleBean> articles;
+public class ListFeedArticlesResponse {
+        private List<ListFeedArticlesResponse.ArticleBean> articles;
         private Integer articlesCount;
 
         @Data

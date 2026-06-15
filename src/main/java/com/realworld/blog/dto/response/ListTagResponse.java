@@ -8,7 +8,7 @@ import java.util.List;
  * @description TODO
  */
 
-public class ArticlesTagResponse {
+public class ListTagResponse {
 
     private List<String> tags;
 

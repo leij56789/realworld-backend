@@ -1,8 +1,8 @@
 package com.realworld.blog.service;
 
-import com.realworld.blog.dto.response.ProfilesUserFollowDeleteResponse;
-import com.realworld.blog.dto.response.ProfilesUserFollowResponse;
-import com.realworld.blog.dto.response.ProfilesUserResponse;
+import com.realworld.blog.dto.response.UnfollowUserResponse;
+import com.realworld.blog.dto.response.FollowUserResponse;
+import com.realworld.blog.dto.response.GetProfileResponse;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.realworld.blog.entity.UserFollows;
 
@@ -13,9 +13,9 @@ import com.realworld.blog.entity.UserFollows;
 */
 public interface UserFollowsService extends IService<UserFollows> {
 
-    ProfilesUserResponse profilesUser(String username);
+    GetProfileResponse getProfile(String username);
 
-    ProfilesUserFollowResponse profilsesUserFollow(String username);
+    FollowUserResponse followUser(String username);
 
-    ProfilesUserFollowDeleteResponse profilsesUserFollowDelete(String username);
+    UnfollowUserResponse unfollowUser(String username);
 }

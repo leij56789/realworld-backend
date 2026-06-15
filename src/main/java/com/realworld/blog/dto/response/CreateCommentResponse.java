@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * @description TODO
  */
 @Data
-public class CommentsCreateResponse {
+public class CreateCommentResponse {
 
     /**
      * comment : {"id":3,"createdAt":"2026-06-14T12:00:00.000Z","updatedAt":"2026-06-14T12:00:00.000Z","body":"This is a great article!","author":{"username":"alice","bio":"Frontend developer","image":null,"following":false}}

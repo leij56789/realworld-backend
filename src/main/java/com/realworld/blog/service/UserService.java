@@ -1,8 +1,8 @@
 package com.realworld.blog.service;
 
-import com.realworld.blog.dto.request.UserUpdateRequest;
-import com.realworld.blog.dto.request.UsersLoginRequest;
-import com.realworld.blog.dto.request.UsersRequest;
+import com.realworld.blog.dto.request.UpdateUserRequest;
+import com.realworld.blog.dto.request.LoginUserRequest;
+import com.realworld.blog.dto.request.RegisterUser;
 import com.realworld.blog.dto.response.*;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.realworld.blog.entity.User;
@@ -14,12 +14,12 @@ import com.realworld.blog.entity.User;
 */
 public interface UserService extends IService<User> {
 
-    UsersLoginResponse usersLogin(UsersLoginRequest usersLoginRequest);
+    LoginUserResponse loginUser(LoginUserRequest loginUserRequest);
 
-    UsersResponse users(UsersRequest usersRequest);
+    RegisterUserResponse registerUser(RegisterUser registerUser);
 
-    UserAuthResponse userAuth();
+    GetUserResponse getUser();
 
-    UserUpdateResponse userUpdate(UserUpdateRequest userUpdateRequest);
+    UpdateUserResponse updateUser(UpdateUserRequest updateUserRequest);
 
 }

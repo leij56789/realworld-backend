@@ -2,14 +2,14 @@ package com.realworld.blog.dto.request;
 
 /**
  * @author jiaolei
- * @date 2026-06-08 19:00
+ * @date 2026-06-09 16:07
  * @description TODO
  */
 
-public class UsersLoginRequest extends Request{
+public class RegisterUser extends Request{
 
     /**
-     * user : {"email":"jake@jake.jake","password":"jakejake"}
+     * user : {"username":"Jacob","email":"jake@jake.jake","password":"jakejake"}
      */
 
     private UserBean user;
@@ -24,12 +24,22 @@ public class UsersLoginRequest extends Request{
 
     public static class UserBean {
         /**
+         * username : Jacob
          * email : jake@jake.jake
          * password : jakejake
          */
 
+        private String username;
         private String email;
         private String password;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
 
         public String getEmail() {
             return email;

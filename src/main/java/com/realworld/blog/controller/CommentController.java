@@ -1,12 +1,10 @@
 package com.realworld.blog.controller;
 
 import com.realworld.blog.annotation.Log;
-import com.realworld.blog.dto.request.ArticlesPostRequest;
-import com.realworld.blog.dto.request.CommentsCreateRequest;
-import com.realworld.blog.dto.response.ArticlesPostResponse;
-import com.realworld.blog.dto.response.CommentDeleteResponse;
-import com.realworld.blog.dto.response.CommentsCreateResponse;
-import com.realworld.blog.dto.response.CommentsListResponse;
+import com.realworld.blog.dto.request.CreateCommentRequest;
+import com.realworld.blog.dto.response.DeleteCommentResponse;
+import com.realworld.blog.dto.response.CreateCommentResponse;
+import com.realworld.blog.dto.response.ListCommentsResponse;
 import com.realworld.blog.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,18 +24,18 @@ public class CommentController {
 
     @Log("获取文章评论列表")
     @GetMapping("/articles/{slug}/comments")
-    public CommentsListResponse commentsList(@PathVariable String slug){
-        return commentService.commentsList(slug);
+    public ListCommentsResponse listComments(@PathVariable String slug){
+        return commentService.listComments(slug);
     }
     @Log("添加评论")
     @PostMapping("/articles/{slug}/comments")
-    public CommentsCreateResponse commentsCreate(@RequestBody CommentsCreateRequest commentsCreateRequest,@PathVariable  String slug){
-        return commentService.commentsCreate(commentsCreateRequest,slug);
+    public CreateCommentResponse createComment(@RequestBody CreateCommentRequest createCommentRequest, @PathVariable  String slug){
+        return commentService.createComment(createCommentRequest,slug);
     }
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Log("删除评论")
     @DeleteMapping("/articles/{slug}/comments/{id}")
-    public CommentDeleteResponse commentDelete(@PathVariable String slug,@PathVariable Long id){
-        return commentService.commentDelete(slug,id);
+    public DeleteCommentResponse deleteComment(@PathVariable String slug, @PathVariable Long id){
+        return commentService.deleteComment(slug,id);
     }
 }
