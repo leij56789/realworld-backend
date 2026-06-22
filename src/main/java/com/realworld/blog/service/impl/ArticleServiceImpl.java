@@ -13,6 +13,7 @@ import com.realworld.blog.entity.*;
 import com.realworld.blog.interceptor.JwtInterceptor;
 import com.realworld.blog.mapper.*;
 import com.realworld.blog.service.*;
+import com.realworld.blog.utils.CacheHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -103,6 +104,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
             }
         }
         Article articleRes = this.getById(article.getId());
+        CacheHelper.deletePattern("articles:list:*");
+        CacheHelper.put("article:"+articleRes.getSlug(),articleRes);
+
 
         CreateArticleResponse articlesPostResponse = new CreateArticleResponse();
         articlesPostResponse.setArticle(new CreateArticleResponse.ArticleBean());
@@ -125,7 +129,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         getArticleResponse.setArticle(new GetArticleResponse.ArticleBean());
         getArticleResponse.getArticle().setAuthor(new GetArticleResponse.ArticleBean.AuthorBean());
 
-        Article article = this.lambdaQuery().eq(Article::getSlug, slug).one();
+        Article article = CacheHelper.getOrLoad("article:" + slug,
+                () -> this.lambdaQuery().eq(Article::getSlug, slug).one(), Article.class);
+//        Article article = this.lambdaQuery().eq(Article::getSlug, slug).one();
         if (article == null) {
             throw new BusinessException("article not found");
         }
@@ -189,7 +195,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         if(offset<=0){
             offset=0;
         }
-
+        int finalLimit = limit;
+        int finalOffset = offset;
         String currentUsername = JwtInterceptor.getCurrentUser();
 
         ListArticlesResponse listArticlesResponse = new ListArticlesResponse();
@@ -197,13 +204,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
         List<ListArticlesResponse.ArticlesDTO> list=null;
         Integer articlesDTOCount=0;
-        System.out.println("入口");
         if(favorited==null&&tag==null&&author==null){
-            list= articleMapper.getArticlesDTOAllList(limit,offset);
+
+            list=CacheHelper.getOrLoadList(CacheHelper.buildArticleListCacheKey(tag,author,favorited,finalLimit,finalOffset)
+                    ,()->articleMapper.getArticlesDTOAllList(finalLimit, finalOffset),ListArticlesResponse.ArticlesDTO.class);
+//            list= articleMapper.getArticlesDTOAllList(limit,offset);
             articlesDTOCount= Math.toIntExact(this.lambdaQuery().count());
         }else{
-            System.out.println("tag查询");
-            list=articleMapper.getArticlesDTOList(favorited,tag,author,limit,offset);
+            list=CacheHelper.getOrLoadList(CacheHelper.buildArticleListCacheKey(tag,author,favorited,finalLimit,finalOffset)
+                    ,()->articleMapper.getArticlesDTOList(favorited,tag,author,finalLimit,finalOffset),ListArticlesResponse.ArticlesDTO.class);
+//            list=articleMapper.getArticlesDTOList(favorited,tag,author,limit,offset);
             articlesDTOCount=articleMapper.getArticlesDTOCount(favorited,tag,author);
         }
         if(list!=null&&!list.isEmpty()) {
@@ -321,7 +331,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 articleBean.getAuthor().setFollowing(true);
             }
         }
-
+        CacheHelper.evict("article:"+slug);
+        CacheHelper.deletePattern("articles:list:*");
         articleBean.setAuthorId(null);
         articleBean.setId(null);
 
@@ -353,6 +364,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         if(!removed){
             throw new BusinessException("delete failed");
         }
+        CacheHelper.evict("article:"+slug);
+        CacheHelper.deletePattern("articles:list:*");
         return null;
     }
 

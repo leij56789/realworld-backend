@@ -13,6 +13,7 @@ import com.realworld.blog.entity.User;
 import com.realworld.blog.entity.UserFollows;
 import com.realworld.blog.interceptor.JwtInterceptor;
 import com.realworld.blog.mapper.ArticleMapper;
+import com.realworld.blog.mq.producer.CommentMessageProducer;
 import com.realworld.blog.service.ArticleService;
 import com.realworld.blog.service.CommentService;
 import com.realworld.blog.mapper.CommentMapper;
@@ -46,6 +47,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
     private ArticleService articleService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentMessageProducer commentMessageProducer;
 
 
 
@@ -95,6 +98,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
         return listCommentsResponse;
     }
 
+    @Transactional
     @Override
     public CreateCommentResponse createComment(CreateCommentRequest createCommentRequest, String slug) {
         //insert into comment (body,article_id,author_id)
@@ -149,6 +153,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
         }else{
             commentBean.getAuthor().setFollowing(false);
         }
+        //发送MQ消息（异步通知）
+        commentMessageProducer.sendCommentNotification(
+                comment.getArticleId(),user.getUsername(),comment.getBody());
 
         createCommentResponse.setComment(commentBean);
         return createCommentResponse;
